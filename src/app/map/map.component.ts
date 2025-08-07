@@ -8,12 +8,17 @@ import TileLayer from 'ol/layer/Tile';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
-import Point from 'ol/geom/Point';
 import LineString from 'ol/geom/LineString';
 
-import { Style, Stroke, Icon } from 'ol/style';
+import { Style, Stroke } from 'ol/style';
 import { fromLonLat } from 'ol/proj';
 import Overlay from 'ol/Overlay';
+
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ClientService } from '../services/map.service';
+import { Client } from '../models/client.model';
+import { ItemService } from '../services/item.service';
+import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-map',
@@ -23,6 +28,29 @@ import Overlay from 'ol/Overlay';
 export class MapComponent implements OnInit {
   public map!: Map;
   private vectorSource = new VectorSource();
+
+  clients: Client[] = [];
+  clientSelect: Client = new Client();
+  items: Client[] = [];
+  itemSelect: Client = new Client();
+  orders: Client[] = [];
+  orderSelect: Client = new Client();
+  newclient: Client = new Client();
+  form: FormGroup;
+  isAlteracao: boolean = false;
+  preload: boolean = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private clientService: ClientService,
+    private itemService: ItemService,
+    private orderService: OrderService
+  ) {
+    this.form = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+    });
+  }
 
   ngOnInit(): void {
     const startCoord = [-48.09855213700989, -15.84317502287108];
@@ -49,8 +77,10 @@ export class MapComponent implements OnInit {
 
     this.addMarker(startCoord, 'start');
     this.addMarker(endCoord, 'end');
-
     this.getRoute(startCoord, endCoord);
+    this.loadClients();
+    this.loadItems();
+    this.loadOrders();
   }
 
   addMarker(coord: number[], type: 'start' | 'end') {
@@ -63,11 +93,11 @@ export class MapComponent implements OnInit {
         : 'assets/technical-support.png';
 
     element.innerHTML = `
-    <div class="marker-wrapper">
-      <img src="assets/marker.png" class="marker-base">
-      <img src="${iconUrl}" class="marker-icon">
-    </div>
-  `;
+      <div class="marker-wrapper">
+        <img src="assets/marker.png" class="marker-base">
+        <img src="${iconUrl}" class="marker-icon">
+      </div>
+    `;
 
     const overlay = new Overlay({
       element: element,
@@ -85,7 +115,7 @@ export class MapComponent implements OnInit {
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('Erro na API OSRM');
+        throw new Error('Erro in API OSRM');
       }
       const data = await response.json();
 
@@ -107,7 +137,40 @@ export class MapComponent implements OnInit {
 
       this.vectorSource.addFeature(routeFeature);
     } catch (error) {
-      console.error('Erro ao buscar rota:', error);
+      console.error('Error fetching route:', error);
     }
+  }
+
+  loadClients(): void {
+    this.clientService.getClients().subscribe(
+      (data: Client[]) => {
+        this.clients = data;
+      },
+      (err: any) => {
+        console.error('Error loading clients:', err);
+      }
+    );
+  }
+
+  loadItems(): void {
+    this.itemService.getItems().subscribe(
+      (data: Client[]) => {
+        this.items = data;
+      },
+      (err: any) => {
+        console.error('Error loading items:', err);
+      }
+    );
+  }
+
+  loadOrders(): void {
+    this.orderService.getOrders().subscribe(
+      (data: Client[]) => {
+        this.orders = data;
+      },
+      (err: any) => {
+        console.error('Error loading orders:', err);
+      }
+    );
   }
 }
