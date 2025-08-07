@@ -8,7 +8,7 @@ import { Client } from '../models/client.model';
   providedIn: 'root',
 })
 export class ClientService {
-  apiPath: any = 'http://localhost:8080';
+  apiPath: any = environment.API;
   constructor(private http: HttpClient) {}
 
   getClients(): Observable<Client[]> {

@@ -8,7 +8,7 @@ import { Item } from '../models/item.model';
   providedIn: 'root',
 })
 export class ItemService {
-  apiPath: any = 'http://localhost:8080';
+  apiPath: any = environment.API;
   constructor(private http: HttpClient) {}
 
   getItems(): Observable<Item[]> {
@@ -20,10 +20,7 @@ export class ItemService {
   }
 
   updateItem(item: Item) {
-    return this.http.put<any>(
-      `${this.apiPath}/items?id=${item.id}`,
-      item
-    );
+    return this.http.put<any>(`${this.apiPath}/items?id=${item.id}`, item);
   }
 
   deleteItem(item: Item) {

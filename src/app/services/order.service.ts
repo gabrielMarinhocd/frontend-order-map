@@ -8,7 +8,7 @@ import { Order } from '../models/order.model';
   providedIn: 'root',
 })
 export class OrderService {
-  apiPath: any = 'http://localhost:8080';
+  apiPath: any = environment.API;
   constructor(private http: HttpClient) {}
 
   getOrders(): Observable<Order[]> {
@@ -20,10 +20,7 @@ export class OrderService {
   }
 
   updateOrder(order: Order) {
-    return this.http.put<any>(
-      `${this.apiPath}/orders?id=${order.id}`,
-      order
-    );
+    return this.http.put<any>(`${this.apiPath}/orders?id=${order.id}`, order);
   }
 
   deleteOrder(order: Order) {
