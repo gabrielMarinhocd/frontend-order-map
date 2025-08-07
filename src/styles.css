@@ -1,0 +1,35 @@
+body {
+  background-color: #1d2127;
+  color: whitesmoke;
+}
+
+.custom-marker {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.marker-wrapper {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.marker-base {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.marker-icon {
+  position: absolute;
+  width: 22px;
+  height: 18px;
+  top: 7px;
+  left: 8px;
+  z-index: 2;
+}
