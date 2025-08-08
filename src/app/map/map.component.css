@@ -1,8 +1,42 @@
-html body {
-  color: #808697;
+.map-container {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  height: 500px;
 }
 
-.map {
-  width: 100%;
+.sidebar {
+  background-color: #1d2127;
+  color: whitesmoke;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  padding: 1rem;
   height: 500px;
+}
+
+.sidebar .form-control,
+.sidebar .form-select {
+  background-color: #1d2127;
+  color: whitesmoke;
+  border: 1px solid #444;
+}
+
+.sidebar .form-control::placeholder {
+  color: #ccc;
+}
+
+.sidebar .form-control:focus,
+.sidebar .form-select:focus {
+  background-color: #1d2127;
+  color: whitesmoke;
+  border-color: #666;
+  box-shadow: none;
+}
+
+.option-title {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
