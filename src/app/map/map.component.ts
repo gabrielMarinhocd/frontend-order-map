@@ -445,13 +445,55 @@ export class MapComponent implements OnInit {
     this.itemService.updateItem(transformedItem).subscribe(
       (data: any) => {
         this.preload = false;
-        
+
         this.limpar();
-        
+
         alert('Item successfully updated!');
       },
       (error) => {
         alert('Could not update the item!');
+        this.preload = false;
+        this.initMapItems();
+      }
+    );
+  }
+
+  onRemoveClientChange(event: any) {
+    debugger
+    const id: number = parseInt( event.target.value);
+    const client:Client = this.clients.find((c) => c.id == id )!
+
+    this.clientService.deleteClient(client).subscribe(
+      (data: any) => {
+        this.preload = false;
+
+        this.limpar();
+
+        alert('Successfully remove!');
+      },
+      (error) => {
+        alert('Could not remove!');
+        this.preload = false;
+        this.initMapItems();
+      }
+    );
+  }
+
+  onRemoveItemChange(event: any) {
+    debugger
+    const id: number = parseInt( event.target.value);
+    const item:Item = this.items.find((c) => c.id == id )!
+
+    this.itemService.deleteItem(item).subscribe(
+      (data: any) => {
+        this.preload = false;
+
+        this.limpar();
+
+        alert('Successfully remove!');
+      },
+      (error) => {
+        alert('Could not remove!');
         this.preload = false;
         this.initMapItems();
       }

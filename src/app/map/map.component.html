@@ -89,6 +89,13 @@
                 >
                   <i class="fa fa-plus"></i>
                 </button>
+                <button
+                  class="btn btn-light btn-sm action"
+                  (click)="setAction('client', 'remove')"
+                  width="auto"
+                >
+                  <i class="fa fa-trash"></i>
+                </button>
               </div>
 
               <div *ngIf="action == 'edit'">
@@ -98,7 +105,25 @@
                   [(ngModel)]="selectedClient"
                   (change)="onClientChange($event)"
                 >
-                  <option value="" disabled selected>Selecione um cliente</option>
+                  <option value="" disabled selected>
+                    Selecione um cliente
+                  </option>
+                  <option *ngFor="let client of clients" [value]="client.id">
+                    {{ client.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div *ngIf="action == 'remove'">
+                <label for="client-id">Cliente</label>
+                <select
+                  class="form-select mb-2"
+                  [(ngModel)]="selectedClient"
+                  (change)="onRemoveClientChange($event)"
+                >
+                  <option value="" disabled selected>
+                    Selecione um cliente
+                  </option>
                   <option *ngFor="let client of clients" [value]="client.id">
                     {{ client.name }}
                   </option>
@@ -108,7 +133,9 @@
               <form
                 (ngSubmit)="option()"
                 [formGroup]="formClient"
-                *ngIf="tipo == 'client'"
+                *ngIf="
+                  tipo == 'client' && (action == 'edit' || action == 'add')
+                "
               >
                 <div class="form-group">
                   <label for="client-name">Nome</label>
@@ -190,6 +217,13 @@
             >
               <i class="fa fa-plus"></i>
             </button>
+            <button
+              class="btn btn-light btn-sm action"
+              (click)="setAction('item', 'remove')"
+              width="auto"
+            >
+              <i class="fa fa-trash"></i>
+            </button>
           </div>
 
           <div *ngIf="action == 'edit'">
@@ -206,10 +240,24 @@
             </select>
           </div>
 
+          <div *ngIf="action == 'remove'">
+            <label for="item-id">Item</label>
+            <select
+              class="form-select mb-2"
+              [(ngModel)]="selectedItem"
+              (change)="onRemoveItemChange($event)"
+            >
+              <option value="" disabled selected>Selecione um item</option>
+              <option *ngFor="let item of items" [value]="item.id">
+                {{ item.name }}
+              </option>
+            </select>
+          </div>
+
           <form
             (ngSubmit)="option()"
             [formGroup]="formItem"
-            *ngIf="tipo == 'item'"
+            *ngIf="tipo == 'item' && (action == 'edit' || action == 'add')"
           >
             <div class="form-group">
               <label for="item-name">Nome</label>
