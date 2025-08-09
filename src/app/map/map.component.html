@@ -1,7 +1,7 @@
 <div class="container mt-4">
   <h3 class="text-center mb-3">
     <i class="fa fa-map-pin text-primary me-2"></i>
-    Rota do Cliente até o Equipamento
+    Localização dos Aparelhos IoC
   </h3>
 
   <div class="row">
@@ -24,7 +24,11 @@
           ></i>
         </h6>
         <div *ngIf="showOption4" class="mt-2">
-          <div class="box row" *ngFor="let order of orders" (click)="initMapOrder(order)">
+          <div
+            class="box row"
+            *ngFor="let order of orders"
+            (click)="initMapOrder(order)"
+          >
             <div class="col-md-11 row" id="describe">
               <div class="col-md-12">
                 <b> {{ order.description }}</b>
@@ -341,6 +345,7 @@
             </button>
           </form>
         </div>
+
         <hr />
       </div>
     </div>

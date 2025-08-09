@@ -1,10 +1,10 @@
-import { Client } from './client.model'; // ajuste o caminho conforme seu projeto
+import { Client } from './client.model';
 import { Item } from './item.model';
 
 export class Order {
   constructor(
     public id?: number,
-    public dt?: Date, // Timestamp → Date em TypeScript
+    public dt?: Date, 
     public description?: string,
     public status?: string,
     public active?: number,
