@@ -44,9 +44,12 @@ export class MapComponent implements OnInit {
   showOption1 = false;
   showOption2 = false;
   showOption3 = false;
+  showOption4 = false;
 
   selectedClient: string = '';
   selectedItem: string = '';
+
+  orederDescribe: string = '';
 
   tipo: String = '';
   action: String = '';
@@ -134,14 +137,17 @@ export class MapComponent implements OnInit {
     });
   }
 
-  toggleOption(option: 'option1' | 'option2' | 'option3') {
+  toggleOption(option: 'option1' | 'option2' | 'option3' | 'option4') {
     if (option === 'option1') {
       this.showOption1 = !this.showOption1;
     } else if (option === 'option2') {
       this.showOption2 = !this.showOption2;
     } else if (option === 'option3') {
       this.showOption3 = !this.showOption3;
+    } else if (option === 'option4') {
+      this.showOption4 = !this.showOption4;
     }
+
     this.limpar();
   }
 
@@ -310,6 +316,7 @@ export class MapComponent implements OnInit {
   limpar() {
     this.tipo = '';
     this.action = '';
+    this.orederDescribe = '';
 
     this.createFormClient(new Client());
     this.createFormClient(new Item());
@@ -320,6 +327,7 @@ export class MapComponent implements OnInit {
     this.loadClients();
     this.loadItems();
     this.loadOrders();
+    this.clearRoutes();
     this.initMapItems();
   }
 
@@ -340,7 +348,6 @@ export class MapComponent implements OnInit {
   }
 
   option() {
-    debugger;
     if (
       this.tipo === 'client' &&
       this.action == 'add' &&
@@ -376,10 +383,9 @@ export class MapComponent implements OnInit {
 
     this.clientService.insertClient(transformedClient).subscribe(
       (data: any) => {
-        this.loadItems();
-        this.limpar();
         this.preload = false;
-        this.initMapItems();
+
+        this.limpar();
 
         alert('Client successfully registered!');
       },
@@ -459,9 +465,8 @@ export class MapComponent implements OnInit {
   }
 
   onRemoveClientChange(event: any) {
-    debugger
-    const id: number = parseInt( event.target.value);
-    const client:Client = this.clients.find((c) => c.id == id )!
+    const id: number = parseInt(event.target.value);
+    const client: Client = this.clients.find((c) => c.id == id)!;
 
     this.clientService.deleteClient(client).subscribe(
       (data: any) => {
@@ -480,9 +485,8 @@ export class MapComponent implements OnInit {
   }
 
   onRemoveItemChange(event: any) {
-    debugger
-    const id: number = parseInt( event.target.value);
-    const item:Item = this.items.find((c) => c.id == id )!
+    const id: number = parseInt(event.target.value);
+    const item: Item = this.items.find((c) => c.id == id)!;
 
     this.itemService.deleteItem(item).subscribe(
       (data: any) => {
@@ -498,5 +502,57 @@ export class MapComponent implements OnInit {
         this.initMapItems();
       }
     );
+  }
+
+  insertOrder() {
+    const idClient: number = parseInt(this.selectedClient!);
+    const idItem: number = parseInt(this.selectedItem!);
+
+    const transformedOrder = new Order();
+    transformedOrder.client = this.clients.find((c) => c.id == idClient)!;
+    transformedOrder.item = this.items.find((c) => c.id == idItem)!;
+    transformedOrder.description = this.orederDescribe;
+    transformedOrder.active = 0;
+    transformedOrder.dt = new Date();
+    transformedOrder.status = 'Rota Salva';
+
+    this.orderService.insertOrder(transformedOrder).subscribe(
+      (data: any) => {
+        this.preload = false;
+
+        this.limpar();
+
+        alert('Order successfully registered!');
+      },
+      (error) => {
+        alert('Could not register the oreder!');
+        this.preload = false;
+        this.initMapItems();
+      }
+    );
+  }
+
+  removeOrder(order: Order) {
+    this.orderService.deleteOrder(order).subscribe(
+      (data: any) => {
+        this.preload = false;
+
+        this.limpar();
+
+        alert('Successfully remove!');
+      },
+      (error) => {
+        alert('Could not remove!');
+        this.preload = false;
+        this.initMapItems();
+      }
+    );
+  }
+
+  initMapOrder(order: Order) {
+    this.selectedClient = String(order.client?.id);
+    this.selectedItem = String(order.item?.id);
+
+    this.applySettings();
   }
 }

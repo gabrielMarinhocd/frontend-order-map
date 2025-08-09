@@ -20,10 +20,10 @@ export class OrderService {
   }
 
   updateOrder(order: Order) {
-    return this.http.put<any>(`${this.apiPath}/orders?id=${order.id}`, order);
+    return this.http.put<any>(`${this.apiPath}/orders/${order.id}`, order);
   }
 
   deleteOrder(order: Order) {
-    return this.http.delete<any>(`${this.apiPath}/orders?id=${order.id}`);
+    return this.http.delete<any>(`${this.apiPath}/orders/${order.id}`);
   }
 }

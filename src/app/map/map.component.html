@@ -13,179 +13,214 @@
       <div class="sidebar">
         <h5 class="mb-3"><i class="fa fa-cog me-2"></i> Configurações</h5>
 
-        <div>
-          <h6 class="option-title" (click)="toggleOption('option3')">
-            Rotas
-            <i
-              class="fa"
-              [ngClass]="{
-                'fa-chevron-down': !showOption3,
-                'fa-chevron-up': showOption3
-              }"
-            ></i>
-          </h6>
-          <div *ngIf="showOption3" class="mt-2">
-            <label for="client-id">Cliente</label>
-            <div class="d-flex justify-content-between align-items-center">
-              <select class="form-select mb-2" [(ngModel)]="selectedClient">
-                <option value="" disabled selected>Selecione um cliente</option>
-                <option *ngFor="let cliente of clients" [value]="cliente.id">
-                  {{ cliente.name }}
-                </option>
-              </select>
+        <h6 class="option-title" (click)="toggleOption('option4')">
+          Rotas Salvas
+          <i
+            class="fa"
+            [ngClass]="{
+              'fa-chevron-down': !showOption4,
+              'fa-chevron-up': showOption4
+            }"
+          ></i>
+        </h6>
+        <div *ngIf="showOption4" class="mt-2">
+          <div class="box row" *ngFor="let order of orders" (click)="initMapOrder(order)">
+            <div class="col-md-11 row" id="describe">
+              <div class="col-md-12">
+                <b> {{ order.description }}</b>
+              </div>
+              <div class="col-md-12">
+                <b>Cliente:</b> {{ order.client?.name }}
+                <br />
+                <b>Item ID:</b> {{ order.item?.name }}
+              </div>
             </div>
-            <label for="item-id">Item</label>
-            <select class="form-select mb-2" [(ngModel)]="selectedItem">
-              <option value="" disabled selected>Selecione um item</option>
-              <option *ngFor="let item of items" [value]="item.id">
-                {{ item.name }}
-              </option>
-            </select>
-
-            <button
-              class="btn btn-success w-100 mt-3"
-              (click)="applySettings()"
-            >
-              Aplicar
-            </button>
-
-            <button
-              class="btn btn-outline-danger w-100 mt-2"
-              (click)="clearRoutes()"
-            >
-              Limpar
-            </button>
+            <div class="col-md-1">
+              <button
+                class="btn btn-light btn-sm action"
+                width="auto"
+                (click)="removeOrder(order)"
+              >
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
           </div>
         </div>
 
         <hr />
 
-        <div class="mt-3">
-          <h6 class="option-title" (click)="toggleOption('option1')">
-            Cliente
-            <i
-              class="fa"
-              [ngClass]="{
-                'fa-chevron-down': !showOption1,
-                'fa-chevron-up': showOption1
-              }"
-            ></i>
-          </h6>
+        <h6 class="option-title" (click)="toggleOption('option3')">
+          Nova rota
+          <i
+            class="fa"
+            [ngClass]="{
+              'fa-chevron-down': !showOption3,
+              'fa-chevron-up': showOption3
+            }"
+          ></i>
+        </h6>
+        <div *ngIf="showOption3" class="mt-2">
+          <label for="client-id">Cliente</label>
+          <div class="d-flex justify-content-between align-items-center">
+            <select class="form-select mb-2" [(ngModel)]="selectedClient">
+              <option value="" disabled selected>Selecione um cliente</option>
+              <option *ngFor="let cliente of clients" [value]="cliente.id">
+                {{ cliente.name }}
+              </option>
+            </select>
+          </div>
+          <label for="item-id">Item</label>
+          <select class="form-select mb-2" [(ngModel)]="selectedItem">
+            <option value="" disabled selected>Selecione um item</option>
+            <option *ngFor="let item of items" [value]="item.id">
+              {{ item.name }}
+            </option>
+          </select>
+          <label for="item-id">Descrição</label>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Descrição do pedido"
+            [(ngModel)]="orederDescribe"
+          />
 
-          <div *ngIf="showOption1" class="mt-2 row">
-            <div class="col-md-12">
-              <div class="text-center" style="display: inline">
-                <button
-                  class="btn btn-light btn-sm me-2 action"
-                  (click)="setAction('client', 'edit')"
-                  width="auto"
-                >
-                  <i class="fa fa-pencil"></i>
-                </button>
-                <button
-                  class="btn btn-light btn-sm action"
-                  (click)="setAction('client', 'add')"
-                  width="auto"
-                >
-                  <i class="fa fa-plus"></i>
-                </button>
-                <button
-                  class="btn btn-light btn-sm action"
-                  (click)="setAction('client', 'remove')"
-                  width="auto"
-                >
-                  <i class="fa fa-trash"></i>
-                </button>
-              </div>
+          <button class="btn btn-primary w-100 mt-3" (click)="applySettings()">
+            Aplicar
+          </button>
+          <button class="btn btn-success w-100 mt-3" (click)="insertOrder()">
+            Salvar
+          </button>
 
-              <div *ngIf="action == 'edit'">
-                <label for="client-id">Cliente</label>
-                <select
-                  class="form-select mb-2"
-                  [(ngModel)]="selectedClient"
-                  (change)="onClientChange($event)"
-                >
-                  <option value="" disabled selected>
-                    Selecione um cliente
-                  </option>
-                  <option *ngFor="let client of clients" [value]="client.id">
-                    {{ client.name }}
-                  </option>
-                </select>
-              </div>
+          <button
+            class="btn btn-outline-danger w-100 mt-2"
+            (click)="clearRoutes()"
+          >
+            Limpar
+          </button>
+        </div>
 
-              <div *ngIf="action == 'remove'">
-                <label for="client-id">Cliente</label>
-                <select
-                  class="form-select mb-2"
-                  [(ngModel)]="selectedClient"
-                  (change)="onRemoveClientChange($event)"
-                >
-                  <option value="" disabled selected>
-                    Selecione um cliente
-                  </option>
-                  <option *ngFor="let client of clients" [value]="client.id">
-                    {{ client.name }}
-                  </option>
-                </select>
-              </div>
+        <hr />
 
-              <form
-                (ngSubmit)="option()"
-                [formGroup]="formClient"
-                *ngIf="
-                  tipo == 'client' && (action == 'edit' || action == 'add')
-                "
+        <h6 class="option-title" (click)="toggleOption('option1')">
+          Cliente
+          <i
+            class="fa"
+            [ngClass]="{
+              'fa-chevron-down': !showOption1,
+              'fa-chevron-up': showOption1
+            }"
+          ></i>
+        </h6>
+
+        <div *ngIf="showOption1" class="mt-2 row">
+          <div class="col-md-12">
+            <div class="text-center" style="display: inline">
+              <button
+                class="btn btn-light btn-sm me-2 action"
+                (click)="setAction('client', 'edit')"
+                width="auto"
               >
-                <div class="form-group">
-                  <label for="client-name">Nome</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="client-name"
-                    formControlName="name"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="client-latitude">Latitude</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="client-latitude"
-                    formControlName="latitude"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="client-longitude">Longitude</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="client-longitude"
-                    formControlName="longitude"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="client-url_icon">URL do Ícone</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    id="client-url_icon"
-                    formControlName="url_icon"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  class="btn btn-success w-100 mt-3"
-                  [disabled]="formClient.invalid"
-                >
-                  Salvar
-                </button>
-              </form>
+                <i class="fa fa-pencil"></i>
+              </button>
+              <button
+                class="btn btn-light btn-sm action"
+                (click)="setAction('client', 'add')"
+                width="auto"
+              >
+                <i class="fa fa-plus"></i>
+              </button>
+              <button
+                class="btn btn-light btn-sm action"
+                (click)="setAction('client', 'remove')"
+                width="auto"
+              >
+                <i class="fa fa-trash"></i>
+              </button>
             </div>
+
+            <br />
+
+            <div *ngIf="action == 'edit'">
+              <label for="client-id">Cliente</label>
+              <select
+                class="form-select mb-2"
+                [(ngModel)]="selectedClient"
+                (change)="onClientChange($event)"
+              >
+                <option value="" disabled selected>Selecione um cliente</option>
+                <option *ngFor="let client of clients" [value]="client.id">
+                  {{ client.name }}
+                </option>
+              </select>
+            </div>
+
+            <div *ngIf="action == 'remove'">
+              <label for="client-id">Selecione um cliente para remover</label>
+              <select
+                class="form-select mb-2"
+                [(ngModel)]="selectedClient"
+                (change)="onRemoveClientChange($event)"
+              >
+                <option value="" disabled selected>Selecione um cliente</option>
+                <option *ngFor="let client of clients" [value]="client.id">
+                  {{ client.name }}
+                </option>
+              </select>
+            </div>
+
+            <form
+              (ngSubmit)="option()"
+              [formGroup]="formClient"
+              *ngIf="tipo == 'client' && (action == 'edit' || action == 'add')"
+            >
+              <div class="form-group">
+                <label for="client-name">Nome</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="client-name"
+                  formControlName="name"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="client-latitude">Latitude</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="client-latitude"
+                  formControlName="latitude"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="client-longitude">Longitude</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="client-longitude"
+                  formControlName="longitude"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="client-url_icon">URL do Ícone</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="client-url_icon"
+                  formControlName="url_icon"
+                />
+              </div>
+
+              <button
+                type="submit"
+                class="btn btn-success w-100 mt-3"
+                [disabled]="formClient.invalid"
+              >
+                Salvar
+              </button>
+            </form>
           </div>
         </div>
 
@@ -226,7 +261,9 @@
             </button>
           </div>
 
-          <div *ngIf="action == 'edit'">
+          <br />
+
+          <div *ngIf="action == 'edit'" class="form">
             <label for="item-id">Item</label>
             <select
               class="form-select mb-2"
@@ -241,7 +278,7 @@
           </div>
 
           <div *ngIf="action == 'remove'">
-            <label for="item-id">Item</label>
+            <label for="item-id">Selecione um item para remover</label>
             <select
               class="form-select mb-2"
               [(ngModel)]="selectedItem"
