@@ -1,6 +1,13 @@
 # Order Map
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.
+IoC Device Location Map Project
+
+## Main Technologies
+
+- **Angular 14**
+- **OL 6.5.0**
+- **Bootstrap 5.3.7**
+- **Font Awesome 4.7.0**
 
 ## Development server
 
