@@ -313,6 +313,14 @@ export class MapComponent implements OnInit {
 
     this.createFormClient(new Client());
     this.createFormClient(new Item());
+
+    this.createFormClient(new Client());
+    this.createFormItem(new Item());
+
+    this.loadClients();
+    this.loadItems();
+    this.loadOrders();
+    this.initMapItems();
   }
 
   onItemChange(event: any) {
@@ -370,32 +378,15 @@ export class MapComponent implements OnInit {
       (data: any) => {
         this.loadItems();
         this.limpar();
-        alert('Client successfully registered!');
         this.preload = false;
+        this.initMapItems();
+
+        alert('Client successfully registered!');
       },
       (error) => {
         alert('Could not register the client!');
         this.preload = false;
-      }
-    );
-  }
-
-  insertItem() {
-    const clientData = this.formClient.value;
-    const client = new Client();
-    const transformedClient = client.transform(clientData);
-    transformedClient.active = 0;
-
-    this.clientService.insertClient(transformedClient).subscribe(
-      (data: any) => {
-        this.loadItems();
-        this.limpar();
-        alert('Client successfully registered!');
-        this.preload = false;
-      },
-      (error) => {
-        alert('Could not register the client!');
-        this.preload = false;
+        this.initMapItems();
       }
     );
   }
@@ -409,14 +400,37 @@ export class MapComponent implements OnInit {
 
     this.clientService.updateClient(transformedClient).subscribe(
       (data: any) => {
-        this.loadClients;
-        this.limpar();
-        alert('Client successfully updated!');
         this.preload = false;
+
+        this.limpar();
+
+        alert('Client successfully updated!');
       },
       (error) => {
         alert('Could not update the client!');
         this.preload = false;
+      }
+    );
+  }
+
+  insertItem() {
+    const itemData = this.formItem.value;
+    const item = new Item();
+    const transformedItem = item.transform(itemData);
+    transformedItem.active = 0;
+
+    this.itemService.insertItem(transformedItem).subscribe(
+      (data: any) => {
+        this.preload = false;
+
+        this.limpar();
+
+        alert('Item successfully registered!');
+      },
+      (error) => {
+        alert('Could not register the item!');
+        this.preload = false;
+        this.initMapItems();
       }
     );
   }
@@ -430,14 +444,16 @@ export class MapComponent implements OnInit {
 
     this.itemService.updateItem(transformedItem).subscribe(
       (data: any) => {
-        this.loadItems();
-        this.limpar();
-        alert('Item successfully updated!');
         this.preload = false;
+        
+        this.limpar();
+        
+        alert('Item successfully updated!');
       },
       (error) => {
         alert('Could not update the item!');
         this.preload = false;
+        this.initMapItems();
       }
     );
   }
