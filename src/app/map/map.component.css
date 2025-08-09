@@ -13,6 +13,10 @@
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   padding: 1rem;
   height: 500px;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding-right: 20px;
+  padding-left: 20px;
 }
 
 .sidebar .form-control,
@@ -39,4 +43,33 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.sidebar .form-group {
+  margin-bottom: 1rem;
+}
+
+.sidebar .form-control {
+  width: 100%;
+}
+
+.sidebar .btn-light {
+  padding: 2px 5px;
+  font-size: 14px;
+  margin-right: 5px;
+}
+
+.sidebar .btn-light i {
+  font-size: 14px;
+}
+
+.sidebar .text-center .btn-light {
+  display: inline-block;
+}
+
+.action {
+  width: auto;
+  padding: 0;
+  margin: 0;
+  font-size: 12px;
 }

@@ -21,12 +21,12 @@ export class ClientService {
 
   updateClient(client: Client) {
     return this.http.put<any>(
-      `${this.apiPath}/clients?id=${client.id}`,
+      `${this.apiPath}/clients/${client.id}`,
       client
     );
   }
 
   deleteClient(client: Client) {
-    return this.http.delete<any>(`${this.apiPath}/clients?id=${client.id}`);
+    return this.http.delete<any>(`${this.apiPath}/clients/${client.id}`);
   }
 }

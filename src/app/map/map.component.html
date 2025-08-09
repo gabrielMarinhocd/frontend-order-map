@@ -25,15 +25,16 @@
             ></i>
           </h6>
           <div *ngIf="showOption3" class="mt-2">
-            <label>Cliente</label>
-            <select class="form-select mb-2" [(ngModel)]="selectedClient">
-              <option value="" disabled selected>Selecione um cliente</option>
-              <option *ngFor="let cliente of clients" [value]="cliente.id">
-                {{ cliente.name }}
-              </option>
-            </select>
-
-            <label>Item</label>
+            <label for="client-id">Cliente</label>
+            <div class="d-flex justify-content-between align-items-center">
+              <select class="form-select mb-2" [(ngModel)]="selectedClient">
+                <option value="" disabled selected>Selecione um cliente</option>
+                <option *ngFor="let cliente of clients" [value]="cliente.id">
+                  {{ cliente.name }}
+                </option>
+              </select>
+            </div>
+            <label for="item-id">Item</label>
             <select class="form-select mb-2" [(ngModel)]="selectedItem">
               <option value="" disabled selected>Selecione um item</option>
               <option *ngFor="let item of items" [value]="item.id">
@@ -41,7 +42,10 @@
               </option>
             </select>
 
-            <button class="btn btn-light w-100 mt-3" (click)="applySettings()">
+            <button
+              class="btn btn-success w-100 mt-3"
+              (click)="applySettings()"
+            >
               Aplicar
             </button>
 
@@ -54,6 +58,8 @@
           </div>
         </div>
 
+        <hr />
+
         <div class="mt-3">
           <h6 class="option-title" (click)="toggleOption('option1')">
             Cliente
@@ -65,36 +71,192 @@
               }"
             ></i>
           </h6>
-          <div *ngIf="showOption1" class="mt-2">
-            <select class="form-select" [(ngModel)]="selectedClient">
-              <option value="" disabled selected>Selecione um cliente</option>
-              <option *ngFor="let cliente of clients" [value]="cliente.id">
-                {{ cliente.name }}
-              </option>
-            </select>
+
+          <div *ngIf="showOption1" class="mt-2 row">
+            <div class="col-md-12">
+              <div class="text-center" style="display: inline">
+                <button
+                  class="btn btn-light btn-sm me-2 action"
+                  (click)="setAction('client', 'edit')"
+                  width="auto"
+                >
+                  <i class="fa fa-pencil"></i>
+                </button>
+                <button
+                  class="btn btn-light btn-sm action"
+                  (click)="setAction('client', 'add')"
+                  width="auto"
+                >
+                  <i class="fa fa-plus"></i>
+                </button>
+              </div>
+
+              <div *ngIf="action == 'edit'">
+                <label for="client-id">Cliente</label>
+                <select
+                  class="form-select mb-2"
+                  [(ngModel)]="selectedClient"
+                  (change)="onClientChange($event)"
+                >
+                  <option value="" disabled selected>Selecione um cliente</option>
+                  <option *ngFor="let client of clients" [value]="client.id">
+                    {{ client.name }}
+                  </option>
+                </select>
+              </div>
+
+              <form
+                (ngSubmit)="option()"
+                [formGroup]="formClient"
+                *ngIf="tipo == 'client'"
+              >
+                <div class="form-group">
+                  <label for="client-name">Nome</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="client-name"
+                    formControlName="name"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="client-latitude">Latitude</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="client-latitude"
+                    formControlName="latitude"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="client-longitude">Longitude</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="client-longitude"
+                    formControlName="longitude"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label for="client-url_icon">URL do Ícone</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="client-url_icon"
+                    formControlName="url_icon"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  class="btn btn-success w-100 mt-3"
+                  [disabled]="formClient.invalid"
+                >
+                  Salvar
+                </button>
+              </form>
+            </div>
           </div>
         </div>
 
-        <div class="mt-3">
-          <h6 class="option-title" (click)="toggleOption('option2')">
-            Item
-            <i
-              class="fa"
-              [ngClass]="{
-                'fa-chevron-down': !showOption2,
-                'fa-chevron-up': showOption2
-              }"
-            ></i>
-          </h6>
-          <div *ngIf="showOption2" class="mt-2">
-            <select class="form-select" [(ngModel)]="selectedItem">
+        <hr />
+
+        <h6 class="option-title" (click)="toggleOption('option2')">
+          Item
+          <i
+            class="fa"
+            [ngClass]="{
+              'fa-chevron-down': !showOption2,
+              'fa-chevron-up': showOption2
+            }"
+          ></i>
+        </h6>
+        <div *ngIf="showOption2" class="mt-2">
+          <div class="text-center" style="display: inline">
+            <button
+              class="btn btn-light btn-sm me-2 action"
+              width="auto"
+              (click)="setAction('item', 'edit')"
+            >
+              <i class="fa fa-pencil"></i>
+            </button>
+            <button
+              class="btn btn-light btn-sm action"
+              (click)="setAction('item', 'add')"
+              width="auto"
+            >
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+
+          <div *ngIf="action == 'edit'">
+            <label for="item-id">Item</label>
+            <select
+              class="form-select mb-2"
+              [(ngModel)]="selectedItem"
+              (change)="onItemChange($event)"
+            >
               <option value="" disabled selected>Selecione um item</option>
               <option *ngFor="let item of items" [value]="item.id">
                 {{ item.name }}
               </option>
             </select>
           </div>
+
+          <form
+            (ngSubmit)="option()"
+            [formGroup]="formItem"
+            *ngIf="tipo == 'item'"
+          >
+            <div class="form-group">
+              <label for="item-name">Nome</label>
+              <input
+                type="text"
+                class="form-control"
+                id="item-name"
+                formControlName="name"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="item-latitude">Latitude</label>
+              <input
+                type="text"
+                class="form-control"
+                id="item-latitude"
+                formControlName="latitude"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="item-longitude">Longitude</label>
+              <input
+                type="text"
+                class="form-control"
+                id="item-longitude"
+                formControlName="longitude"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="item-url_icon">URL do Ícone</label>
+              <input
+                type="text"
+                class="form-control"
+                id="item-url_icon"
+                formControlName="url_icon"
+              />
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-3">
+              Salvar
+            </button>
+          </form>
         </div>
+        <hr />
       </div>
     </div>
   </div>

@@ -15,10 +15,12 @@ import { fromLonLat } from 'ol/proj';
 import Overlay from 'ol/Overlay';
 
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ClientService } from '../services/map.service';
+import { ClientService } from '../services/client.service';
 import { Client } from '../models/client.model';
 import { ItemService } from '../services/item.service';
 import { OrderService } from '../services/order.service';
+import { Item } from '../models/item.model';
+import { Order } from '../models/order.model';
 
 @Component({
   selector: 'app-map',
@@ -30,10 +32,12 @@ export class MapComponent implements OnInit {
   private vectorSource = new VectorSource();
 
   clients: Client[] = [];
-  items: Client[] = [];
-  orders: Client[] = [];
+  items: Item[] = [];
+  orders: Order[] = [];
 
-  form: FormGroup;
+  formClient!: FormGroup;
+  formItem!: FormGroup;
+
   isAlteration = false;
   preload = false;
 
@@ -44,15 +48,43 @@ export class MapComponent implements OnInit {
   selectedClient: string = '';
   selectedItem: string = '';
 
+  tipo: String = '';
+  action: String = '';
+
   constructor(
     private fb: FormBuilder,
     private clientService: ClientService,
     private itemService: ItemService,
     private orderService: OrderService
-  ) {
-    this.form = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+  ) {}
+
+  createFormClient(data: Client) {
+    this.formClient = this.fb.group({
+      name: [data.name, Validators.required],
+      latitude: [
+        data.latitude,
+        [Validators.required, Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/)],
+      ],
+      longitude: [
+        data.latitude,
+        [Validators.required, Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/)],
+      ],
+      url_icon: [data.url_icon, Validators.required],
+    });
+  }
+
+  createFormItem(data: Item) {
+    this.formItem = this.fb.group({
+      name: [data.name, Validators.required],
+      latitude: [
+        data.latitude,
+        [Validators.required, Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/)],
+      ],
+      longitude: [
+        data.latitude,
+        [Validators.required, Validators.pattern(/^[-+]?[0-9]*\.?[0-9]+$/)],
+      ],
+      url_icon: [data.url_icon, Validators.required],
     });
   }
 
@@ -73,9 +105,33 @@ export class MapComponent implements OnInit {
       }),
     });
 
+    this.createFormClient(new Client());
+    this.createFormItem(new Item());
+
     this.loadClients();
     this.loadItems();
     this.loadOrders();
+    this.initMapItems();
+  }
+
+  initMapItems() {
+    this.itemService.getItems().subscribe({
+      next: (data: Client[]) => {
+        this.items = data;
+        console.log('Items loaded:', this.items);
+
+        this.items.forEach((item) => {
+          if (item.latitude != null && item.longitude != null) {
+            const itemCoord: number[] = [
+              Number(item.longitude),
+              Number(item.latitude),
+            ];
+            this.addMarker(item, itemCoord, 'item');
+          }
+        });
+      },
+      error: (err) => console.error('Error loading items:', err),
+    });
   }
 
   toggleOption(option: 'option1' | 'option2' | 'option3') {
@@ -86,21 +142,22 @@ export class MapComponent implements OnInit {
     } else if (option === 'option3') {
       this.showOption3 = !this.showOption3;
     }
+    this.limpar();
   }
 
-  addMarker(coord: number[], type: 'client' | 'item') {
+  addMarker(item: Item, coord: number[], type: 'client' | 'item') {
     const element = document.createElement('div');
     element.className = 'custom-marker';
 
     const iconUrl =
       type === 'client'
-        ? 'assets/advertising-panel.png'
-        : 'assets/technical-support.png';
+        ? 'assets/technical-support.png'
+        : 'assets/advertising-panel.png';
 
     element.innerHTML = `
       <div class="marker-wrapper">
         <img src="assets/marker.png" class="marker-base">
-        <img src="${iconUrl}" class="marker-icon">
+        <img src="assets/${item.url_icon}" class="marker-icon">
       </div>
     `;
 
@@ -225,8 +282,8 @@ export class MapComponent implements OnInit {
     this.vectorSource.clear();
     this.map.getOverlays().clear();
 
-    this.addMarker(startCoord, 'client');
-    this.addMarker(endCoord, 'item');
+    this.addMarker(selectedClient, startCoord, 'client');
+    this.addMarker(selectedItem, endCoord, 'item');
 
     this.getRoute(startCoord, endCoord);
   }
@@ -241,5 +298,147 @@ export class MapComponent implements OnInit {
 
     this.map.getView().setCenter(fromLonLat([-48.0, -15.8]));
     this.map.getView().setZoom(12);
+
+    this.initMapItems();
+  }
+
+  setAction(tipo: String, action: String) {
+    this.tipo = tipo;
+    this.action = action;
+  }
+
+  limpar() {
+    this.tipo = '';
+    this.action = '';
+
+    this.createFormClient(new Client());
+    this.createFormClient(new Item());
+  }
+
+  onItemChange(event: any) {
+    this.selectedItem = event.target.value;
+
+    const item: Item = this.items.find((i) => i.id == event.target.value)!;
+    this.createFormItem(item);
+  }
+
+  onClientChange(event: any) {
+    this.selectedClient = event.target.value;
+
+    const client: Client = this.clients.find(
+      (i) => i.id == event.target.value
+    )!;
+    this.createFormClient(client);
+  }
+
+  option() {
+    debugger;
+    if (
+      this.tipo === 'client' &&
+      this.action == 'add' &&
+      this.formClient.valid
+    ) {
+      this.insertClient();
+    } else if (
+      this.tipo === 'item' &&
+      this.action == 'add' &&
+      this.formItem.valid
+    ) {
+      this.insertItem();
+    } else if (
+      this.tipo === 'client' &&
+      this.action == 'edit' &&
+      this.formClient.valid
+    ) {
+      this.updateClient();
+    } else if (
+      this.tipo === 'item' &&
+      this.action == 'edit' &&
+      this.formItem.valid
+    ) {
+      this.updateItem();
+    }
+  }
+
+  insertClient() {
+    const clientData = this.formClient.value;
+    const client = new Client();
+    const transformedClient = client.transform(clientData);
+    transformedClient.active = 0;
+
+    this.clientService.insertClient(transformedClient).subscribe(
+      (data: any) => {
+        this.loadItems();
+        this.limpar();
+        alert('Client successfully registered!');
+        this.preload = false;
+      },
+      (error) => {
+        alert('Could not register the client!');
+        this.preload = false;
+      }
+    );
+  }
+
+  insertItem() {
+    const clientData = this.formClient.value;
+    const client = new Client();
+    const transformedClient = client.transform(clientData);
+    transformedClient.active = 0;
+
+    this.clientService.insertClient(transformedClient).subscribe(
+      (data: any) => {
+        this.loadItems();
+        this.limpar();
+        alert('Client successfully registered!');
+        this.preload = false;
+      },
+      (error) => {
+        alert('Could not register the client!');
+        this.preload = false;
+      }
+    );
+  }
+
+  updateClient() {
+    const clientData = this.formClient.value;
+    const client = new Client();
+    const transformedClient = client.transform(clientData);
+    transformedClient.active = 0;
+    transformedClient.id = parseInt(this.selectedClient);
+
+    this.clientService.updateClient(transformedClient).subscribe(
+      (data: any) => {
+        this.loadClients;
+        this.limpar();
+        alert('Client successfully updated!');
+        this.preload = false;
+      },
+      (error) => {
+        alert('Could not update the client!');
+        this.preload = false;
+      }
+    );
+  }
+
+  updateItem() {
+    const itemData = this.formItem.value;
+    const item = new Item();
+    const transformedItem = item.transform(itemData);
+    transformedItem.active = 0;
+    transformedItem.id = parseInt(this.selectedItem);
+
+    this.itemService.updateItem(transformedItem).subscribe(
+      (data: any) => {
+        this.loadItems();
+        this.limpar();
+        alert('Item successfully updated!');
+        this.preload = false;
+      },
+      (error) => {
+        alert('Could not update the item!');
+        this.preload = false;
+      }
+    );
   }
 }

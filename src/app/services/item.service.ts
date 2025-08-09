@@ -20,10 +20,10 @@ export class ItemService {
   }
 
   updateItem(item: Item) {
-    return this.http.put<any>(`${this.apiPath}/items?id=${item.id}`, item);
+    return this.http.put<any>(`${this.apiPath}/items/${item.id}`, item);
   }
 
   deleteItem(item: Item) {
-    return this.http.delete<any>(`${this.apiPath}/items?id=${item.id}`);
+    return this.http.delete<any>(`${this.apiPath}/items/${item.id}`);
   }
 }
