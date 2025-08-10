@@ -1,6 +1,6 @@
 # Order Map
 
-IoC Device Location Map Project
+IoT Device Location Map Project
 
 ## Main Technologies
 
