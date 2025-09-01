@@ -2,7 +2,7 @@
 
 The IoT Device Location Map Project provides a visual way to track and manage connected devices in real time through interactive maps.
 
-## Frontend Repository
+## Backend Repository
 
 <a href="https://github.com/gabrielMarinhocd/backend-order-map" target="_blank">gabrielMarinhocd/backend-order-map</a>
 
