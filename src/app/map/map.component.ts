@@ -148,7 +148,7 @@ export class MapComponent implements OnInit {
       this.showOption4 = !this.showOption4;
     }
 
-    this.limpar();
+    this.clean();
   }
 
   addMarker(item: Item, coord: number[], type: 'client' | 'item') {
@@ -178,15 +178,8 @@ export class MapComponent implements OnInit {
   }
 
   async getRoute(start: number[], end: number[]) {
-    const url = `https://router.project-osrm.org/route/v1/driving/${start[0]},${start[1]};${end[0]},${end[1]}?overview=full&geometries=geojson`;
 
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error('Error with OSRM API');
-      }
-      const data = await response.json();
-
+    this.orderService.getRoute(start, end).subscribe((data: any) => {
       const coords = data.routes[0].geometry.coordinates;
       const routeCoords = coords.map((c: number[]) => fromLonLat(c));
 
@@ -205,9 +198,12 @@ export class MapComponent implements OnInit {
 
       this.vectorSource.clear();
       this.vectorSource.addFeature(routeFeature);
-    } catch (error) {
-      console.error('Error fetching route:', error);
-    }
+    },
+      (_) => {
+        alert('Erro ao buscar rota');
+        this.preload = false;
+        this.initMapItems();
+      });
   }
 
   loadClients(): void {
@@ -313,7 +309,7 @@ export class MapComponent implements OnInit {
     this.action = action;
   }
 
-  limpar() {
+  clean() {
     this.tipo = '';
     this.action = '';
     this.orederDescribe = '';
@@ -382,14 +378,14 @@ export class MapComponent implements OnInit {
     transformedClient.active = 0;
 
     this.clientService.insertClient(transformedClient).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Client successfully registered!');
       },
-      (error) => {
+      (_) => {
         alert('Could not register the client!');
         this.preload = false;
         this.initMapItems();
@@ -405,14 +401,14 @@ export class MapComponent implements OnInit {
     transformedClient.id = parseInt(this.selectedClient);
 
     this.clientService.updateClient(transformedClient).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Client successfully updated!');
       },
-      (error) => {
+      (_) => {
         alert('Could not update the client!');
         this.preload = false;
       }
@@ -426,14 +422,14 @@ export class MapComponent implements OnInit {
     transformedItem.active = 0;
 
     this.itemService.insertItem(transformedItem).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Item successfully registered!');
       },
-      (error) => {
+      (_) => {
         alert('Could not register the item!');
         this.preload = false;
         this.initMapItems();
@@ -449,14 +445,14 @@ export class MapComponent implements OnInit {
     transformedItem.id = parseInt(this.selectedItem);
 
     this.itemService.updateItem(transformedItem).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Item successfully updated!');
       },
-      (error) => {
+      (_) => {
         alert('Could not update the item!');
         this.preload = false;
         this.initMapItems();
@@ -469,14 +465,14 @@ export class MapComponent implements OnInit {
     const client: Client = this.clients.find((c) => c.id == id)!;
 
     this.clientService.deleteClient(client).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Successfully remove!');
       },
-      (error) => {
+      (_) => {
         alert('Could not remove!');
         this.preload = false;
         this.initMapItems();
@@ -489,14 +485,14 @@ export class MapComponent implements OnInit {
     const item: Item = this.items.find((c) => c.id == id)!;
 
     this.itemService.deleteItem(item).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Successfully remove!');
       },
-      (error) => {
+      (_) => {
         alert('Could not remove!');
         this.preload = false;
         this.initMapItems();
@@ -517,14 +513,14 @@ export class MapComponent implements OnInit {
     transformedOrder.status = 'Rota Salva';
 
     this.orderService.insertOrder(transformedOrder).subscribe(
-      (data: any) => {
+      (_) => {
         this.preload = false;
 
-        this.limpar();
+        this.clean();
 
         alert('Order successfully registered!');
       },
-      (error) => {
+      (_) => {
         alert('Could not register the oreder!');
         this.preload = false;
         this.initMapItems();
@@ -537,8 +533,8 @@ export class MapComponent implements OnInit {
       (data: any) => {
         this.preload = false;
 
-        this.limpar();
-
+        this.clean();
+        this.clearRoutes();
         alert('Successfully remove!');
       },
       (error) => {

@@ -26,4 +26,8 @@ export class OrderService {
   deleteOrder(order: Order) {
     return this.http.delete<any>(`${this.apiPath}/orders/${order.id}`);
   }
+
+  getRoute(start:number[], end:number[]): Observable<Order[]> {
+    return this.http.get<any>(`https://router.project-osrm.org/route/v1/driving/${start[0]},${start[1]};${end[0]},${end[1]}?overview=full&geometries=geojson`);
+  }
 }
